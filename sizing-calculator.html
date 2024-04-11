@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Data Sizing Calculator</title>
+
+    <link rel="stylesheet" href=https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css>
+
+    <link rel="stylesheet" href=https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.css>
+
+    <style>
+
+        html, body {
+
+            height: 100%;
+
+            margin: 0;
+
+            padding: 0;
+
+        }
+
+       
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background: linear-gradient(to bottom right, #000000, #1c1c1c, #2c2c2c, #000000);
+
+            color: #ffffff;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            flex-direction: column; /* Changed flex direction */
+
+        }
+
+ 
+
+        .container {
+
+            background-color: rgba(83, 83, 83, 0.94);
+
+            border-radius: 50px;
+
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+            padding: 30px;
+
+            max-width: 500px;
+
+        }
+
+ 
+
+        h1 {
+
+            text-align: center; /* Center align header text */
+
+            color: #ffffff;
+
+            font-size: 110%;
+
+            padding: 10px
+
+        }
+
+ 
+
+        label {
+
+            font-weight: bold;
+
+        }
+
+ 
+
+        .btn-primary {
+
+            background-color: #003333;
+
+            border-color: #003333;
+
+        }
+
+ 
+
+        .btn-primary:hover {
+
+            background-color: #3d5c5c;
+
+            border-color: #3d5c5c;
+
+        }
+
+ 
+
+        #result {
+
+            margin-top: 20px;
+
+            color: #ffffff;
+
+        }
+
+ 
+
+        #result ul {
+
+            padding-left: 20px;
+
+        }
+
+ 
+
+        #result ul li {
+
+            list-style-type: none;
+
+        }
+
+ 
+
+        canvas {
+
+            margin-top: 20px;
+
+        }
+
+ 
+
+        .header {
+
+            display: flex;
+
+            justify-content: center; /* Center align header content */
+
+            align-items: center;
+
+            flex-direction: column;
+
+            padding: 10px;
+
+            background-color: #000000;
+
+            position: fixed;
+
+            top: 0;
+
+            width: 100%;
+
+        }
+
+ 
+
+        .header h1 {
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5em;
+
+            margin-bottom: 10px; /* Add margin below header text */
+
+        }
+
+ 
+
+        .footer {
+
+            text-align: center; /* Center align footer content */
+
+            position: fixed;
+
+            bottom: 0;
+
+            width: 100%;
+
+            background-color: #000000;
+
+            padding: 10px 0; /* Add padding top and bottom */
+
+        }
+
+ 
+
+        .footer a {
+
+            color: #ffffff;
+
+            margin: 0 20px; /* Add margin to separate footer links */
+
+            text-decoration: none;
+
+        }
+
+ 
+
+        .footer p {
+
+            font-size: 80%; /* Smaller font size for footer text */
+
+            text-transform: capitalize; /* Sentence case */
+
+        }
+
+ 
+
+        .calculator-container {
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            align-items: center;
+
+            height: 100%;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="header">
+
+        <h1 onclick="window.location.href='https://www.unitrends.com';">Sizing Calculator</h1>
+
+    </div>
+
+   
+
+    <div class="calculator-container">
+
+        <div class="container mt-5">
+
+            <!-- Removed the title -->
+
+            <div class="form-group">
+
+                <label for="dataSize">Data Size</label>
+
+                <div class="input-group">
+
+                    <input type="number" class="form-control" id="dataSize" placeholder="Enter size">
+
+                    <select class="form-control" id="unit">
+
+                        <option value="tb">TB</option>
+
+                        <option value="gb">GB</option>
+
+                        <option value="mb">MB</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="growthRate">Annual Growth Rate</label>
+
+                <input type="number" class="form-control" id="growthRate" placeholder="growth rate in %">
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="term">Term</label>
+
+                <input type="number" class="form-control" id="term" placeholder="term in years">
+
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="calculate()">Calculate</button>
+
+            <div id="result"></div>
+
+        </div>
+
+    </div>
+
+ 
+
+    <div class="footer">
+
+        <a href=https://www.unitrends.com/wp-content/uploads/UNI-DataSheet-Backup-Appliances.pdf>Data Sheet</a>
+
+        <a href=https://unitrends3.wpengine.com/compatibility-matrix-2/>Compatibility Matrix</a>
+
+    </div>
+
+ 
+
+    <script src=https://cdn.jsdelivr.net/npm/chart.js@3.7.0></script>
+
+    <script>
+
+        function calculate() {
+
+            var dataSizeInput = document.getElementById("dataSize").value.toLowerCase();
+
+            var unit = document.getElementById("unit").value.toLowerCase();
+
+            var dataSize = parseDataSize(dataSizeInput, unit);
+
+            var growthRate = parseFloat(document.getElementById("growthRate").value) / 100;
+
+            var term = parseInt(document.getElementById("term").value);
+
+            var newDataSize = dataSize * Math.pow(1 + growthRate, term);
+
+ 
+
+            var suggestedAppliances = [];
+
+ 
+
+            // Loop through appliance data to find suggested appliances
+
+            var applianceData = [
+
+                { appliance: '10002', usableCapacity: 2, newSuggested: 1.4 },
+
+                { appliance: '10004', usableCapacity: 4, newSuggested: 2.4 },
+
+                { appliance: '10006', usableCapacity: 6, newSuggested: 3.6 },
+
+                { appliance: '10008', usableCapacity: 8, newSuggested: 5.3 },
+
+                { appliance: '10010', usableCapacity: 10, newSuggested: 6.7 },
+
+                { appliance: '10010', usableCapacity: 10, newSuggested: 6.7 },
+
+                { appliance: '10012', usableCapacity: 12, newSuggested: 8.3 },
+
+                { appliance: '10016', usableCapacity: 16, newSuggested: 11.0 },
+
+                { appliance: '10020', usableCapacity: 20, newSuggested: 13.0 },
+
+                { appliance: '10024', usableCapacity: 24, newSuggested: 16.6 },
+
+                { appliance: '10032', usableCapacity: 32, newSuggested: 22.0 },
+
+                { appliance: '10040', usableCapacity: 40, newSuggested: 28.2 },
+
+                { appliance: '10060', usableCapacity: 60, newSuggested: 41.9 },
+
+                { appliance: '10080', usableCapacity: 80, newSuggested: 55.7 },
+
+                { appliance: '10100', usableCapacity: 100, newSuggested: 74.8 },
+
+                { appliance: '10120', usableCapacity: 120, newSuggested: 88.6 }
+
+            ];
+
+ 
+
+            // Function to find appliance with the next higher capacity than total data size
+
+            function findNextAppliance(totalDataSize) {
+
+                for (var i = 0; i < applianceData.length; i++) {
+
+                    if (applianceData[i].newSuggested > totalDataSize) {
+
+                        return applianceData[i];
+
+                    }
+
+                }
+
+                return null; // Return null if no appliance can accommodate the total data size
+
+            }
+
+ 
+
+            // Function to calculate suggested appliances
+
+            function calculateAppliances(totalDataSize) {
+
+                var remainingData = totalDataSize;
+
+                while (remainingData > 0) {
+
+                    var appliance = findNextAppliance(remainingData);
+
+                    if (appliance) {
+
+                        var quantity = Math.ceil(remainingData / appliance.usableCapacity);
+
+                        var existingAppliance = suggestedAppliances.find(item => item.appliance === appliance.appliance);
+
+                        if (existingAppliance) {
+
+                            existingAppliance.quantity += quantity;
+
+                        } else {
+
+                            suggestedAppliances.push({
+
+                                appliance: appliance.appliance,
+
+                                quantity: quantity
+
+                            });
+
+                        }
+
+                        remainingData = 0; // Break the loop since appliance found
+
+                    } else {
+
+                        // If no single appliance can accommodate the remaining data, use 10120 appliance
+
+                        var defaultAppliance = '10120';
+
+                        var existingDefaultAppliance = suggestedAppliances.find(item => item.appliance === defaultAppliance);
+
+                        if (existingDefaultAppliance) {
+
+                            existingDefaultAppliance.quantity += 1;
+
+                        } else {
+
+                            suggestedAppliances.push({
+
+                                appliance: defaultAppliance,
+
+                                quantity: 1
+
+                            });
+
+                        }
+
+                        remainingData -= 88.6; // Reduce remaining data by capacity of 10120 appliance
+
+                    }
+
+                }
+
+            }
+
+ 
+
+            // Calculate suggested appliances
+
+            calculateAppliances(newDataSize);
+
+ 
+
+            // Generate result HTML
+
+            var result = `
+
+                <p><strong>Data Growth Over ${term} Years:</strong></p>
+
+                <canvas id="dataChart" width="400" height="200"></canvas>
+
+                <p><strong>Data Size at the end of ${term} years:</strong> ${newDataSize.toFixed(2)} TB</p>
+
+                <p><strong>Recommended Appliances:</strong></p>
+
+                <ul>
+
+            `;
+
+            suggestedAppliances.forEach(function(item) {
+
+                result += `<li>${item.quantity} x Recovery Series ${item.appliance}</li>`;
+
+            });
+
+            result += `</ul>`;
+
+ 
+
+            document.getElementById("result").innerHTML = result;
+
+ 
+
+            // Generate chart
+
+            var years = [];
+
+            var dataSizes = [];
+
+            for (var i = 0; i <= term; i++) {
+
+                years.push(i);
+
+                dataSizes.push((dataSize * Math.pow(1 + growthRate, i)).toFixed(2));
+
+            }
+
+ 
+
+            var chartData = {
+
+                labels: years,
+
+                datasets: [{
+
+                    label: 'Data Size (TB)',
+
+                    data: dataSizes,
+
+                    backgroundColor: 'rgba(0, 204, 255, 0.2)',
+
+                   borderColor: 'rgb(0, 204, 255)',
+
+                    borderWidth: 1.5
+
+                }]
+
+            };
+
+ 
+
+            var ctx = document.getElementById('dataChart').getContext('2d');
+
+            var myChart = new Chart(ctx, {
+
+                type: 'line',
+
+                data: chartData,
+
+                options: {
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true
+
+                        }
+
+                    },
+
+                    plugins: {
+
+                        title: {
+
+                            display: true,
+
+                            text: 'Data Growth Over Time',
+
+                            font: {
+
+                                size: 16
+
+                            }
+
+                        },
+
+                        legend: {
+
+                            display: false
+
+                        }
+
+                    },
+
+                    animation: {
+
+                        duration: 2000,
+
+                        easing: 'easeInOutQuart'
+
+                    }
+
+                }
+
+            });
+
+        }
+
+ 
+
+        // Function to parse data size input into TB
+
+        function parseDataSize(dataSizeInput, unit) {
+
+            if (unit === "tb") {
+
+                return parseFloat(dataSizeInput);
+
+            } else if (unit === "gb") {
+
+                return parseFloat(dataSizeInput) / 1024;
+
+            } else if (unit === "mb") {
+
+                return parseFloat(dataSizeInput) / 1000000;
+
+            }
+
+            else {
+
+                return NaN;
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>
+
