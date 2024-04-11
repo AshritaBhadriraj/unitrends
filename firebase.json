@@ -8,7 +8,7 @@
     ],
     "rewrites": [
       {
-        "source": "**",
+        "source": "https://unigen10sizing.web.app/",
         "destination": "/index.html"
       }
     ]
