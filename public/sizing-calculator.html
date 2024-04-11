@@ -621,6 +621,29 @@
         }
 
     </script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyB_l4dGkl2JB-9kMD0zW8dFZzV3ukFH29o",
+          authDomain: "unitrends-sizing.firebaseapp.com",
+          projectId: "unitrends-sizing",
+          storageBucket: "unitrends-sizing.appspot.com",
+          messagingSenderId: "113535682801",
+          appId: "1:113535682801:web:621d143a37041405f08150",
+          measurementId: "G-LTT8E40G23"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+      </script>
 
 </body>
 
